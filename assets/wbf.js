@@ -1,4 +1,4 @@
-var wsUri = "wss://72.187.52.12:10965";
+var wsUri = "ws://72.187.52.12:10965";
 var InGameName = getCookie("InGameName");
 var FriendCode = getCookie("FriendCode");
 var RoomName = "";
