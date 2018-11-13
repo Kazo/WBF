@@ -21,34 +21,45 @@ namespace WBFWebSocketServer
 
         private void Run()
         {
-            while (Program.Running)
+            try
             {
-                while (Program.Running)
+                while (Program.Client[ClientID].tcpClient != null)
                 {
-                    if (Program.Client[ClientID].tcpClient.Available != 0x00)
+                    while (Program.Client[ClientID].tcpClient.Available == 0x00)
                     {
-                        break;
+                        if (!Program.Client[ClientID].tcpClient.Connected)
+                        {
+                            DisconnectClient("timed out.", ClientID);
+                            return;
+                        }
+                        Thread.Sleep(1);
                     }
-                }
 
-                Byte[] Reply = new Byte[Program.Client[ClientID].tcpClient.Available];
+                    Byte[] Reply = new Byte[Program.Client[ClientID].tcpClient.Available];
 
-                Read(ClientID, Reply);
+                    Read(ClientID, Reply);
 
-                if (Reply[0x00] == 0x88)
-                {
-                    DisconnectClient("left.", ClientID);
-                    return;
-                }
+                    if (Reply[0x00] == 0x88)
+                    {
+                        DisconnectClient("left.", ClientID);
+                        return;
+                    }
 
-                if (new Regex("^GET").IsMatch(Encoding.UTF8.GetString(Reply)))
-                {
-                    PromoteClient(Reply);
+                    if (new Regex("^GET").IsMatch(Encoding.UTF8.GetString(Reply)))
+                    {
+                        PromoteClient(Reply);
+                    }
+                    else
+                    {
+                        ProcessReply(Reply);
+                    }
+                    Thread.Sleep(1);
                 }
-                else
-                {
-                    ProcessReply(Reply);
-                }
+            }
+            catch(Exception)
+            {
+                DisconnectClient("timed out.", ClientID);
+                return;
             }
         }
 
@@ -217,7 +228,7 @@ namespace WBFWebSocketServer
             return r.Replace(msg, "<a href=\"$1\" target=\"_blank\">$1</a>").Replace("href=\"www", "href=\"http://www");
         }
 
-        private void SendStatsAll()
+        public void SendStatsAll()
         {
             for (uint i = 1; i < Program.Client.Length; i++)
             {
@@ -227,7 +238,7 @@ namespace WBFWebSocketServer
 
         private void SendStats(UInt32 Client)
         {
-            SendCommand(Client, "0\n" + Program.TotalClients.ToString() + "\n" + Program.TotalBattles.ToString());
+            SendCommand(Client, "0\n" + Program.TotalClients.ToString() + "\n" + Program.TotalRooms.ToString());
         }
 
         public void SendCommand(UInt32 Client, String Command)
@@ -249,14 +260,17 @@ namespace WBFWebSocketServer
                 {
                     Program.roomHandler.LeaveRoom(Client);
                 }
-                Program.TotalClients--;
+                if (Program.TotalClients > 0)
+                {
+                    Program.TotalClients--;
+                }
                 Program.Log(Message, Client);
-                //EndBattle(Message);
+                Program.Client[Client].LoggedIn = false;
+                Program.Client[Client].Upgraded = false;
                 SendStatsAll();
             }
-            Program.Client[Client].tcpClient.Close();
+            //Program.Client[Client].tcpClient.Close();
             Program.Client[Client] = new Program.ClientStruct();
-            Program.Client[Client].tcpClient = new TcpClient();
             Program.Client[Client].clientHandler = new ClientHandler();
         }
 

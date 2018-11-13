@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
+//using System.Threading;
 
 namespace WBFWebSocketServer
 {
@@ -24,17 +24,17 @@ namespace WBFWebSocketServer
                 Rooms[i].Members = new UInt32[4];
             }
 
-            Thread thread = new Thread(Run);
-            thread.Start();
+            /*Thread thread = new Thread(Run);
+            thread.Start();*/
         }
 
-        private void Run()
+        /*private void Run()
         {
             while (Program.Running)
             {
-
+                Thread.Sleep(1);
             }
-        }
+        }*/
 
         public void MakeRoom(String Name, UInt32 ClientID)
         {
@@ -46,6 +46,8 @@ namespace WBFWebSocketServer
                     Rooms[i].Size++;
                     Rooms[i].Name = Name;
                     Program.Client[ClientID].Room = i;
+                    Program.TotalRooms++;
+                    Program.Client[ClientID].clientHandler.SendStatsAll();
                     UpdateRoomsAll(ClientID);
                     break;
                 }
@@ -126,6 +128,25 @@ namespace WBFWebSocketServer
                         Rooms[RoomID].Members[i] = 0;
                         i = 1;
                     }
+                }
+            }
+
+            Boolean RoomEmpty = true;
+            foreach(UInt32 Member in Rooms[RoomID].Members)
+            {
+                if(Member != 0)
+                {
+                    RoomEmpty = false;
+                    Program.Client[Member].clientHandler.SendCommand(Member, "3\n");
+                }
+            }
+
+            if (RoomEmpty)
+            {
+                if (Program.TotalRooms > 0)
+                {
+                    Program.TotalRooms--;
+                    Program.Client[ClientID].clientHandler.SendStatsAll();
                 }
             }
             UpdateRoomsAll(ClientID);

@@ -20,7 +20,7 @@ namespace WBFWebSocketServer
         public static RoomHandler roomHandler;
         public static ClientStruct[] Client;
         public static UInt32 TotalClients;
-        public static UInt32 TotalBattles;
+        public static UInt32 TotalRooms;
         public static Int32 Port;
         public static Boolean Running;
 
@@ -35,7 +35,6 @@ namespace WBFWebSocketServer
 
             for (int i = 0; i < Client.Length; i++)
             {
-                Client[i].tcpClient = new TcpClient();
                 Client[i].clientHandler = new ClientHandler();
             }
 
@@ -61,8 +60,10 @@ namespace WBFWebSocketServer
                 if (Console.ReadLine().ToLower() == "exit")
                 {
                     Running = false;
+                    Client = new ClientStruct[1024];
                     socketListener.Stop();
                 }
+                Thread.Sleep(1);
             }
         }
 

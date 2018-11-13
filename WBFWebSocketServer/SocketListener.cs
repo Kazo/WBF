@@ -50,19 +50,13 @@ namespace WBFWebSocketServer
 
                 }
 
-                for (int i = 1; i < Program.Client.Length; i++)
+                for (uint i = 1; i < Program.Client.Length; i++)
                 {
-                    if (Program.Client[i].tcpClient.Client != null)
+                    if (Program.Client[i].tcpClient == null)
                     {
-                        if (!Program.Client[i].tcpClient.Connected)
-                        {
-                            Program.Client[i].tcpClient = tcpClient;
-                            if (Program.Client[i].tcpClient.Client != null)
-                            {
-                                Program.Client[i].clientHandler.Start((uint)i);
-                            }
-                            break;
-                        }
+                        Program.Client[i].tcpClient = tcpClient;
+                        Program.Client[i].clientHandler.Start(i);
+                        break;
                     }
                 }
             }

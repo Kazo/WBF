@@ -5,10 +5,9 @@ var RoomName = "";
 var InGameName2 = "";
 var FriendCode2 = "";
 var Clients = "0";
-var Battles = "0";
+var Rooms = "0";
 var Connected = false;
 var InRoom = false;
-var RoomName = '';
 
 function init() {
     document.getElementById('header').innerHTML = 'Connecting to server...';
@@ -40,17 +39,17 @@ function onClose(evt) {
 
 function UpdateStats() {
     var users = 'users';
-    var battles = 'battles';
+    var rooms = 'rooms';
 
     if (Clients == 1) {
         users = 'user';
     }
 
-    if (Battles == 1) {
-        battles = 'battle';
+    if (Rooms == 1) {
+        rooms = 'room';
     }
 
-    document.getElementById('stats').innerHTML = Clients + ' ' + users + ' online and ' + Battles + ' active ' + battles;
+    document.getElementById('stats').innerHTML = Clients + ' ' + users + ' online and ' + Rooms + ' ' + rooms;
 }
 
 function SendPacket(msg) {
@@ -63,7 +62,7 @@ function onMessage(evt) {
         case "0"://Stats
             {
                 Clients = msg[1];
-                Battles = msg[2];
+                Rooms = msg[2];
                 UpdateStats();
             }
             break;
@@ -74,10 +73,10 @@ function onMessage(evt) {
                     document.getElementById('body').innerHTML = '';
                 }
                 else if (msg[4] == '') {
-                    document.getElementById('body').innerHTML += '<div id="content"><h1>' + msg[2] + '</h1><fieldset><ul><li><label for="host">' + msg[3] + '</label></li><li><label for="guest">' + msg[4] + '</label></li><li><input type="button" value="Join" class="large blue button" onclick="JoinRoom(' + msg[1] + ');" /></li></ul></fieldset></div>';
+                    document.getElementById('body').innerHTML += '<div id="content"><h1>' + msg[2] + '</h1><fieldset><ul><li><label for="host">' + msg[3] + '</label><label for="guest"> ' + msg[4] + '</label></li><li><input type="button" value="Join" class="large blue button" onclick="JoinRoom(' + msg[1] + ');" /></li></ul></fieldset></div>';
                 }
                 else {
-                    document.getElementById('body').innerHTML += '<div id="content"><h1>' + msg[2] + '</h1><fieldset><ul><li><label for="host">' + msg[3] + '</label></li><li><label for="guest">' + msg[4] + '</label></li></ul></fieldset></div>';
+                    document.getElementById('body').innerHTML += '<div id="content"><h1>' + msg[2] + '</h1><fieldset><ul><li><label for="host">' + msg[3] + '</label><label for="guest"> ' + msg[4] + '</label></li></ul></fieldset></div>';
                 }
             }
             break;
