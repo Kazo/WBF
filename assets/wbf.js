@@ -157,6 +157,8 @@ function SetRoom(RoomName) {
 }
 
 function goHome() {
+    InGameName2 = '';
+    FriendCode2 = '';
     SetHome();
     SendPacket("4\n");
 }

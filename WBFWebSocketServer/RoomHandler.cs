@@ -49,6 +49,7 @@ namespace WBFWebSocketServer
                     Program.TotalRooms++;
                     Program.Client[ClientID].clientHandler.SendStatsAll();
                     UpdateRoomsAll(ClientID);
+                    Program.Log("has opened room " + i.ToString() + ".", 0);
                     break;
                 }
             }
@@ -148,6 +149,7 @@ namespace WBFWebSocketServer
                     Program.TotalRooms--;
                     Program.Client[ClientID].clientHandler.SendStatsAll();
                 }
+                Program.Log("has closed room " + RoomID.ToString() + ".", 0);
             }
             UpdateRoomsAll(ClientID);
         }

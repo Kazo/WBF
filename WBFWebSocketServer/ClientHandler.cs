@@ -128,7 +128,7 @@ namespace WBFWebSocketServer
                     case "2":///Make Room
                         {
                             Program.roomHandler.MakeRoom(msg[1], ClientID);
-                            Program.Log("is hosting in room " + Program.Client[ClientID].Room.ToString() + ".", ClientID);
+                            Program.Log("has joined room " + Program.Client[ClientID].Room.ToString() + ".", ClientID);
                         }
                         break;
 
@@ -146,6 +146,7 @@ namespace WBFWebSocketServer
 
                     case "4"://Leave Room
                         {
+                            Program.Log("has left room " + Program.Client[ClientID].Room.ToString() + ".", ClientID);
                             Program.roomHandler.LeaveRoom(ClientID);
                         }
                         break;
